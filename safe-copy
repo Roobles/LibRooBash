@@ -13,20 +13,36 @@ DD_BLOCK_SIZE=512
 TARGET_FILE_SIZE=0
 SOURCE_FILE_SIZE=$(stat -c '%s' "${SOURCE_FILE}")
 
+# If a location is specified, use same name as source file.
+if [ -d "${TARGET_FILE}" ]; then
+  TARGET_FILE="$(dirname "${TARGET_FILE}")/$(basename "${SOURCE_FILE}")"
+fi
+
+# If file exists, set skip count.
 if [ -f "${TARGET_FILE}" ]; then
   TARGET_FILE_SIZE=$(stat -c '%s' "${TARGET_FILE}")
   [ "${SOURCE_FILE_SIZE}" -eq "${TARGET_FILE_SIZE}" ] && error-out "Nothing to copy."
   SKIP_COUNT=$(expr ${TARGET_FILE_SIZE} / ${DD_BLOCK_SIZE})
 fi
 
-DD_CMD=(dd status=progress bs=${DD_BLOCK_SIZE})
-DD_CMD+=(if=\""${SOURCE_FILE}"\")
-DD_CMD+=(of=\""${TARGET_FILE}"\")
+DD_BASE_CMD=(dd bs=${DD_BLOCK_SIZE})
+DD_INPUT_CMD=(if=\""${SOURCE_FILE}"\")
+[ -n "${SKIP_COUNT}" ] && DD_INPUT_CMD+=(skip=${SKIP_COUNT})
 
-if [ -n "${SKIP_COUNT}" ]; then
-  DD_CMD+=(skip=${SKIP_COUNT}) 
-  DD_CMD+=(seek=${SKIP_COUNT})
+DD_OUTPUT_CMD=(of=\""${TARGET_FILE}"\")
+[ -n "${SKIP_COUNT}" ] && DD_OUTPUT_CMD+=(seek=${SKIP_COUNT})
+
+# Use pv if it exists.  Otherwise use dd's built-in progress.
+if ( which pv > /dev/null ); then
+  EXPECTED_SIZE=$(expr $SOURCE_FILE_SIZE - $TARGET_FILE_SIZE)
+  DD_PV_INPUT_CMD=(${DD_BASE_CMD[@]} ${DD_INPUT_CMD[@]})
+  DD_PV_OUTPUT_CMD=(${DD_BASE_CMD[@]} ${DD_OUTPUT_CMD[@]})
+  DD_PV_CMD=(pv -s ${EXPECTED_SIZE})
+
+  DD_CMD=(${DD_PV_INPUT_CMD[@]} \| ${DD_PV_CMD[@]} \| ${DD_PV_OUTPUT_CMD[@]})
+else
+  DD_CMD=(${DD_BASE_CMD} status=progress ${DD_INPUT_CMD[@]} ${DD_OUTPUT_CMD[@]})
 fi
 
-echo ${DD_CMD[@]}
+echo "${DD_CMD[@]}"
 eval ${DD_CMD[@]}
