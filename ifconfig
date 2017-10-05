@@ -1,0 +1,24 @@
+#!/bin/bash
+
+ETH_CMD=(interface)
+case "$#" in
+  0)
+    ;;
+  1)
+    case "$1" in
+      addresses)
+        ETH_CMD+=(-t $1)
+        ;;
+      interfaces)
+        ETH_CMD+=(-t $1)
+        ;;
+      *)
+        ETH_CMD+=(-t addresses -i $1)
+    esac
+    ;;
+  *)
+    ETH_CMD+=($@)
+    ;;
+esac
+
+eval ${ETH_CMD[@]}

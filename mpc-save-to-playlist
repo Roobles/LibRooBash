@@ -1,0 +1,19 @@
+#!/bin/bash
+
+. "${LIB_ROO}"
+. "${ENV_ROO}"
+
+[ -z "${ENV_ROO}" ] && error-out 'ENV_ROO is not set.'
+[ -z "${MPD_DIR}" ] && error-out 'MPD_DIR must be set.'
+[ ! -d "${MPD_DIR}" ] && error-out "MPD_DIR (${MPD_DIR}) does not exist."
+MPD_PLAYLIST_DIR="${MPD_DIR}/playlists"
+MPD_PLAYLIST_EXTENSION='m3u'
+
+[ ! -d "${MPD_PLAYLIST_DIR}" ] && mkdir -p "${MPD_PLAYLIST_DIR}"
+
+PLAYLIST_NAME="${1}"
+TARGET_PLAYLIST="${MPD_PLAYLIST_DIR}/${PLAYLIST_NAME}.${MPD_PLAYLIST_EXTENSION}"
+
+[ -z "${PLAYLIST_NAME}" ] && error-out 'Must specify a playlist.'
+
+mpc -f '%file%'|head -n 1 >> "${TARGET_PLAYLIST}"

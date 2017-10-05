@@ -1,0 +1,8 @@
+#!/bin/bash
+
+BATTERY_INFO=`WMIC PATH Win32_Battery Get EstimatedChargeRemaining,EstimatedRunTime|head -n 2|tail -n 1`
+CHARGE_REMAINING=`echo $BATTERY_INFO|awk '{print $1}'`
+MINUTES_REMAINING=`echo $BATTERY_INFO|awk '{print $2}'`
+
+echo "Charge:   ${CHARGE_REMAINING}%"
+echo "Remaning: ${MINUTES_REMAINING} Minutes"

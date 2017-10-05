@@ -1,0 +1,6 @@
+#!/bin/bash
+
+MPC_QUERY="$@"
+[ -z "${MPC_QUERY}" ] && MPC_QUERY='.'
+
+mpc -f "[{{ [%artist% - ]%title% }} ]{{ %file% }}" playlist|grep -iEn "${MPC_QUERY}"|sed 's/:/: /g'

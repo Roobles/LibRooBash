@@ -1,0 +1,3 @@
+#!/bin/bash
+
+nuget pack "${1}" -Prop Configuration=Release

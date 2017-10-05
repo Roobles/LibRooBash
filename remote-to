@@ -1,0 +1,45 @@
+#!/bin/bash
+
+. "$(dirname $0)/lib-roo"
+
+GETOPTS_STR=':h:f:l:u:'
+REMOTE_HOST=''
+LOCAL_FILE=''
+REMOTE_LOC=''
+SSH_USER=''
+
+# Read Input
+while getopts "${GETOPTS_STR}" opt; do
+  case ${opt} in
+    h)
+      REMOTE_HOST="${OPTARG}"
+      ;;
+
+    f)
+      LOCAL_FILE="${OPTARG}"
+      ;;
+
+    l)
+      REMOTE_LOC="${OPTARG}"
+      ;;
+
+    u)
+      SSH_USER="${OPTARG}"
+      ;;
+  esac
+done
+
+# Validate Input
+[ -z "${REMOTE_HOST}" ] && error-out "Must provide a remote host.  (-h)"
+[ -z "${SSH_USER}" ] && error-out    "Must provide a remote user.  (-u)"
+
+if [ -z "${LOCAL_FILE}" ]
+then
+  ssh "${SSH_USER}"@"${REMOTE_HOST}"
+  exit $?
+fi
+
+[ -f "${LOCAL_FILE}" ] || error-out "Local file '${LOCAL_FILE}' does not exist."
+[ -n "${REMOTE_LOC}" ] || error-out "Must specify a target location."
+
+scp "${LOCAL_FILE}" "${SSH_USER}"@"${REMOTE_HOST}":"${REMOTE_LOC}"

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+error-out()
+{
+  1>&2 printf "\n\e[1;31mError\e[0m: %s\n" "${@}"
+  exit 1
+}
+
+info()
+{
+  printf "\n\e[1;32mInfo\e[0m: %s\n" "${@}"
+}
+
+assert-directory()
+{
+  [ -d "${1}" ] || error-out "Directory '${1}' does not exist."
+}
+
+assert-file()
+{
+  [ -f "${1}" ] || error-out "File '${1}' does not exist."
+}
+
+assert-file-location()
+{
+  assert-directory $(dirname "${1}")
+}

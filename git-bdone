@@ -1,0 +1,14 @@
+#!/bin/bash
+
+error-out()
+{
+  echo 1>&2 "Error: $@"
+  exit 1
+}
+
+TARGET_BRANCH="${1}"
+[ -z "${TARGET_BRANCH}" ] && error-out 'Must provide a branch.'
+
+git co "${TARGET_BRANCH}" || error-out "Failed the check out branch '${TARGET_BRANCH}'."
+git up || error-out "Failed to update."
+git br --merged "${TARGET_BRANCH}"| grep -vE "${TARGET_BRANCH}|master"| xargs -r git br -d

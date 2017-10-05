@@ -1,0 +1,32 @@
+#!/bin/bash
+
+. "${LIB_ROO}"
+
+SOURCE_FILE="${1}"
+TARGET_FILE="${2}"
+
+assert-file "${SOURCE_FILE}"
+assert-file-location "${TARGET_FILE}"
+
+SKIP_COUNT=''
+DD_BLOCK_SIZE=512
+TARGET_FILE_SIZE=0
+SOURCE_FILE_SIZE=$(stat -c '%s' "${SOURCE_FILE}")
+
+if [ -f "${TARGET_FILE}" ]; then
+  TARGET_FILE_SIZE=$(stat -c '%s' "${TARGET_FILE}")
+  [ "${SOURCE_FILE_SIZE}" -eq "${TARGET_FILE_SIZE}" ] && error-out "Nothing to copy."
+  SKIP_COUNT=$(expr ${TARGET_FILE_SIZE} / ${DD_BLOCK_SIZE})
+fi
+
+DD_CMD=(dd status=progress bs=${DD_BLOCK_SIZE})
+DD_CMD+=(if=\""${SOURCE_FILE}"\")
+DD_CMD+=(of=\""${TARGET_FILE}"\")
+
+if [ -n "${SKIP_COUNT}" ]; then
+  DD_CMD+=(skip=${SKIP_COUNT}) 
+  DD_CMD+=(seek=${SKIP_COUNT})
+fi
+
+echo ${DD_CMD[@]}
+eval ${DD_CMD[@]}
