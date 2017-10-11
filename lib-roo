@@ -25,3 +25,8 @@ assert-file-location()
 {
   assert-directory $(dirname "${1}")
 }
+
+file-size()
+{
+  stat -c '%s' "$@"
+}

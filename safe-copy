@@ -11,7 +11,7 @@ assert-file-location "${TARGET_FILE}"
 SKIP_COUNT=''
 DD_BLOCK_SIZE=512
 TARGET_FILE_SIZE=0
-SOURCE_FILE_SIZE=$(stat -c '%s' "${SOURCE_FILE}")
+SOURCE_FILE_SIZE=$(file-size "${SOURCE_FILE}")
 
 # If a location is specified, use same name as source file.
 if [ -d "${TARGET_FILE}" ]; then
@@ -20,7 +20,7 @@ fi
 
 # If file exists, set skip count.
 if [ -f "${TARGET_FILE}" ]; then
-  TARGET_FILE_SIZE=$(stat -c '%s' "${TARGET_FILE}")
+  TARGET_FILE_SIZE=$(file-size "${TARGET_FILE}")
   [ "${SOURCE_FILE_SIZE}" -eq "${TARGET_FILE_SIZE}" ] && error-out "Nothing to copy."
   SKIP_COUNT=$(expr ${TARGET_FILE_SIZE} / ${DD_BLOCK_SIZE})
 fi
