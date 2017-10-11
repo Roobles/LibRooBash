@@ -1,0 +1,14 @@
+#!/bin/bash
+
+. ${LIB_ROO}
+
+[ -z "${1}" ]  && error-out 'Must specify a search criteria.'
+
+MPC_MATCHES=($(mpc-search "${@}"|awk '{ print $1 }'|grep -Eo '^[0-9]+'))
+MATCH_COUNT="${#MPC_MATCHES[@]}"
+[ "${MATCH_COUNT}" -eq "0" ] && error-out "No matches found for query '${@}'."
+
+MATCH_INDEX="$(expr ${RANDOM} \% ${MATCH_COUNT})"
+MPC_INDEX="${MPC_MATCHES[$MATCH_INDEX]}"
+
+mpc play ${MPC_INDEX}
