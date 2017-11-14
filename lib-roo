@@ -31,6 +31,24 @@ assert-file-location()
   assert-directory $(dirname "${1}")
 }
 
+assert-newer()
+{
+  SOURCE_FILE="${1}"
+  DEST_FILE="${2}"
+
+  [ -z "${SOURCE_FILE}" ] && error-out 'No source file provided.'
+  [ -z "${DEST_FILE}" ] && error-out 'No destination file provided.'
+  assert-file "${SOURCE_FILE}"
+  assert-file "${DEST_FILE}"
+
+  SOURCE_NAME="$(basename "${SOURCE_FILE}")"
+  DEST_NAME="$(basename "${DEST_FILE}")"
+
+  ERROR_MSG="File '${SOURCE_NAME}' is not newer than '${DEST_FILE}'."
+  [ "${SOURCE_NAME}" == "${DEST_NAME}" ] && ERROR_MSG="File '${SOURCE_NAME}' is not newer."
+  [ ! "${SOURCE_FILE}" -nt "${DEST_FILE}" ] && error-out "${ERROR_MSG}"
+}
+
 file-size()
 {
   stat -c '%s' "$@"
