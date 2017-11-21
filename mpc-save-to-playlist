@@ -5,6 +5,7 @@
 
 [ -z "${ENV_ROO}" ] && error-out 'ENV_ROO is not set.'
 [ -z "${MPD_DIR}" ] && error-out 'MPD_DIR must be set.'
+[ -z "${MPD_GROUP}" ] && error-out 'MPD_GROUP is not set.'
 [ ! -d "${MPD_DIR}" ] && error-out "MPD_DIR (${MPD_DIR}) does not exist."
 MPD_PLAYLIST_DIR="${MPD_DIR}/playlists"
 MPD_PLAYLIST_EXTENSION='m3u'
@@ -16,4 +17,11 @@ TARGET_PLAYLIST="${MPD_PLAYLIST_DIR}/${PLAYLIST_NAME}.${MPD_PLAYLIST_EXTENSION}"
 
 [ -z "${PLAYLIST_NAME}" ] && error-out 'Must specify a playlist.'
 
+if [ ! -f "${TARGET_PLAYLIST}" ];then
+  touch "${TARGET_PLAYLIST}"
+  chgrp "${MPD_GROUP}" "${TARGET_PLAYLIST}" || error-out "Failed to set group on '${PLAYLIST_NAME}'."
+  chmod 775 "${TARGET_PLAYLIST}" || error-out "Failed to set permissions on '${PLAYLIST_NAME}'."
+fi
+
 mpc -f '%file%'|head -n 1 >> "${TARGET_PLAYLIST}"
+
