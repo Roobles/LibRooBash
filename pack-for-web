@@ -1,0 +1,21 @@
+#!/bin/bash
+
+. "${LIB_ROO}"
+
+SOURCE_FILE="${1}"
+DESTINATION_FILE="${2}"
+
+[ -z "${SOURCE_FILE}" ] && error-out 'Must specify a source file to pack.'
+[ ! -f "${SOURCE_FILE}" ] && error-out "Source file '${SOURCE_FILE}' does not exist."
+
+assert-file "${SOURCE_FILE}"
+
+if [ -z "${DESTINATION_FILE}" ];then
+  DESTINATION_FILE="$(echo "${SOURCE_FILE}"| sed 's/\.[a-zA-Z0-9.]\+ *$//')"
+fi
+
+[ "${SOURCE_FILE}" == "${DESTINATION_FILE}" ] && error-out 'Source file must differ from destination.'
+
+[ -f "${DESTINATION_FILE}" ] && rm "${DESTINATION_FILE}"
+dd if=/dev/urandom of="${DESTINATION_FILE}" count=1
+dd if="${SOURCE_FILE}" of="${DESTINATION_FILE}" seek=1 conv=notrunc
