@@ -9,4 +9,4 @@ TARGET_DIR="${1}"
 
 TOTAL_FILES="$(find "${TARGET_DIR}" -type f|grep -c .)"
 [ "${TOTAL_FILES}" -eq "0" ] && error-out "No files found in '${TARGET_DIR}'."
-find "${TARGET_DIR}" -type f|head -n $((1 + $RANDOM % ${TOTAL_FILES}))|tail -n 1
+find "${TARGET_DIR}" -type f|head -n $(rand ${TOTAL_FILES})|tail -n 1
