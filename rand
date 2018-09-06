@@ -1,0 +1,8 @@
+#!/bin/bash
+
+. "${LIB_ROO}" || exit 1
+
+MAX_NUM="${1}"
+[ -z "${MAX_NUM}" ] && error-out 'Must specify an upper limit.'
+
+echo $((1 + $RANDOM % ${MAX_NUM}))
