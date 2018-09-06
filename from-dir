@@ -1,0 +1,12 @@
+#!/bin/bash
+
+. "${LIB_ROO}" || exit 1
+
+TARGET_DIR="${1}"
+
+[ -n "${TARGET_DIR}" ] || error-out "Must specify a directory."
+[ -d "${TARGET_DIR}" ] || error-out "'${TARGET_DIR}' is not a directory."
+
+TOTAL_FILES="$(find "${TARGET_DIR}" -type f|grep -c .)"
+[ "${TOTAL_FILES}" -eq "0" ] && error-out "No files found in '${TARGET_DIR}'."
+find "${TARGET_DIR}" -type f|head -n $((1 + $RANDOM % ${TOTAL_FILES}))|tail -n 1
