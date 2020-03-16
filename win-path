@@ -1,6 +1,4 @@
 #!/bin/bash
-TARGET_FILE="$@"
 
-FULL_PATH="`readlink -f \"$TARGET_FILE\"`"
-WIN_PATH="`cygpath -w \"$FULL_PATH\"`"
-echo "$WIN_PATH"
+TARGET_PATH="${1}"
+wslpath -w "$(readlink -f "${TARGET_PATH}")"

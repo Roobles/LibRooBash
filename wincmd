@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CMD_ARG="${1}"
+WINCMD_BIN="$(win-path "$(which "${CMD_ARG}")")"
+
+shift 1
+
+/mnt/c/Windows/system32/cmd.exe /C "${WINCMD_BIN}" ${@}
