@@ -1,0 +1,8 @@
+#!/bin/bash
+
+WIN_EXPLORE='/mnt/c/Windows/explorer.exe'
+
+TARGET_PATH="${@}"
+[ -z "${TARGET_PATH}" ] && TARGET_PATH='.'
+
+wincmd "${WIN_EXPLORE}" "$(win-path "${TARGET_PATH}")"
